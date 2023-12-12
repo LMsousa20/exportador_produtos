@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="buscarGrupos()">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-around">
+    <a class="navbar-brand" href="#">Importador de Produtos</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(Página atual)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Destaques</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Preços</a>
+        </li>
+        <li class="nav-item">
+
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" id="idBanco">
+    <div class="row">
+      <div class="col">
+        <div>Banco Princial:</div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">DATABASE</span>
+          </div>
+          <input type="text" class="form-control" id="database_principal">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">PORTA</span>
+          </div>
+          <input type="text" class="form-control" id="porta_principal">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">USER</span>
+          </div>
+          <input type="text" class="form-control" id="user_principal">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">PASSWORD</span>
+          </div>
+          <input type="text" class="form-control" id="Password_principal">
+        </div>
+      </div>
+      <div class="col">
+        <div>Banco Pra Exporta:</div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">DATABASE</span>
+          </div>
+          <input type="text" class="form-control" id="database_exportar">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">PORTA</span>
+          </div>
+          <input type="text" class="form-control" id="porta_exportar">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">USER</span>
+          </div>
+          <input type="text" class="form-control" id="user_exportar">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">PASSWORD</span>
+          </div>
+          <input type="text" class="form-control" id="Password_exportar">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" id="btn_connect" onclick="caminhos()" class="btn btn-primary">Conectar</button>
+    </div>
+  </div>
+
+
+  <div class="container" id="idGrupos">
+    <div class="row mb-3">
+      <div class="col">
+        <button type="button" id="btn_connect" onclick="buscarGrupos()" class="btn btn-primary">Buscar Grupo</button>
+      </div>
+      <div class="col">
+        <button type="button" id="btn_connect" onclick="enviarGrupo()" class="btn btn-primary">Emparelhar
+          Grupos</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col" id="grupos-exportados">
+
+      </div>
+      <div class="col" id="grupos-principal">
+
+      </div>
+
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+  <script src="scripts/grupos.js"></script>
+</body>
+
+</html>

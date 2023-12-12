@@ -1,0 +1,11 @@
+#idBanco{
+    /* display: none; */
+    background-color: pink;
+    border: 1px solid red;
+}
+
+.gp_select{
+    font-weight: bold;
+   color: red;
+}
+
