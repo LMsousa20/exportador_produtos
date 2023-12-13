@@ -120,7 +120,7 @@ app.post('/grupos', async (req, res) => {
 });
 
 
-async function atualizando() {
+async function atualizando(){
     // console.log('atualizando')
 
     produtosExportados.forEach((idProdutosExportados) => {
@@ -139,7 +139,7 @@ async function atualizando() {
               });
               }
 
-                idProdutosExportados.Novo_codigo = idProdutosPrincipais.codigo
+                idProdutosExportados.codigo = idProdutosPrincipais.codigo
                 produtosEmComum.push(idProdutosExportados)
                 // console.log('produto em comum')
                 encontrado = true;
@@ -157,24 +157,12 @@ async function atualizando() {
               idProdutosExportados.cod_marca = '0001'
               
               let novoSubGrupo = empareamentoDosGrupos.find(x => x.subgruposExportadosOriginal == idProdutosExportados.cod_subgrupo)
-              // console.log(novoSubGrupo.subgruposExportadosSubstituido)
               idProdutosExportados.cod_subgrupo = novoSubGrupo.subgruposExportadosSubstituido;
               idProdutosExportados.cod_grupo = novoSubGrupo.subgruposExportadosSubstituido.slice(0,2)
-              // console.log(idProdutosExportados.descricao,idProdutosExportados.cod_grupo,idProdutosExportados.cod_subgrupo)
-              // console.log('produto em Divergente')
               produtosDivergentes.push(idProdutosExportados)
               
               
-              produtosEmpresaExportados.forEach((pee) => {
-                pee.cod_depto = '002'
-                if (pee.cod_barras == idProdutosExportados.cod_barras) {
-                  pee.cod_produto = idProdutosExportados.codigo
-                  pee.cod_fornecedor = '0001'
-                  produtosEmpresaDivergentes.push(pee)
-                  
-                  // console.log('pee adicionado', pee.cod_produto, 'cod de barras', pee.cod_barras)
-                }
-              })
+              
               
             // console.log( NovoCodigoInterno , typeof NovoCodigoInterno)
         }
@@ -210,10 +198,31 @@ async function atualizando() {
     
 
     MakeInsert()
+    produtosEmpresas()
     ProdutosEmpresaMakeInsert(produtosEmpresaExportados)
 }
+;
+function produtosEmpresas(){
 
+    produtosDivergentes.forEach((produto)=>{
+    produtosEmpresaExportados.forEach((pee) => {
+        pee.cod_depto = '002'
+        if (pee.cod_barras == produto.cod_barras) {
+          pee.cod_produto = produto.codigo
+          pee.cod_fornecedor = '0001'
+          pee.dt_ini_validade = null
+          pee.dt_fim_validade = null
+          pee.dt_cadastro = null
+          pee.dt_alteracao = null
+          pee.cod_produto = produto.codigo
+          produtosEmpresaDivergentes.push(pee)
+          
+          // console.log('pee adicionado', pee.cod_produto, 'cod de barras', pee.cod_barras)
+        }
+      })
 
+    })
+}
 
 function MakeInsert() {
 
@@ -269,7 +278,6 @@ function ProdutosEmpresaMakeInsert(entrada) {
             if(produtoComando[valorProduto] === null){
               valoresItens += `NULL`;
             }else {
-              console.log(produtoComando[valorProduto].length, typeof produtoComando[valorProduto])
               valoresItens += `'${produtoComando[valorProduto]}'`;
             }
         })
