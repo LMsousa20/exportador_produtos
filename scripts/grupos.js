@@ -94,12 +94,15 @@ async function enviarGrupo(){
             let subGrupoInvalido = optSelect.parentNode.children[0].children[0].textContent;
             optSelect.parentNode.innerHTML += `<br> <h5 style='
             color: red;'>ESSE CAMPO NÃO PODE SER VAZIO  </h5>`;
-            alert(`Falta preenche Sub Grupo  ${subGrupoInvalido}`)
+            
             
             
             liberadoEnvio = false;
 
         }
+        // else{
+        //     optSelect.parentNode.style.display = "none";
+        // }
         console.log(optSelect.id, optSelect.value)
         dadosPost.push(
             {            
@@ -120,6 +123,8 @@ async function enviarGrupo(){
         },
         body: JSON.stringify(dadosPost) // Converte o objeto para uma string JSON
       }
+
+
 if(liberadoEnvio === true){
 
     await fetch(`http://localhost:3001/grupos`, options).then(response => {
@@ -140,6 +145,8 @@ if(liberadoEnvio === true){
     });
 
     alert('ENVIADO COM SUCESSO')
+} else{
+    alert(`Falta preenche os Sub Grupos `)
 }
 
 }

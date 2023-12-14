@@ -20,7 +20,7 @@ let empareamentoDosGrupos = [];
 
 app.listen(PORTA, () => {
     comunicacao = true
-    // console.log(`conectado back-end`, PORTA)
+    console.log(`conectado back-end`, PORTA)
 })
 
 function PrincipalBD(local) {
@@ -45,13 +45,16 @@ function PrincipalBD(local) {
 
 }
 
-initDonwloadBD()
+
 
 async function initDonwloadBD() {
     await PrincipalConsult()
     await ExportConsult()
     
+    
 }
+
+initDonwloadBD()
 
 async function ExportConsult() {
     PrincipalBD(false)
@@ -68,10 +71,10 @@ async function ExportConsult() {
         subgruposExportados = result4.rows
         const result5 = await client.query(`select * from departamentos order by codigo`)
         departamentosExportados = result5.rows
-        // console.log('passou')
+        console.log('passou')
     } catch {
-        // console.log('errou no principal')
-        // return console.log(result1)
+        console.log('errou no principal')
+        return console.log(result1)
 
     }
 }
@@ -82,7 +85,7 @@ async function PrincipalConsult() {
         const result1 = await client.query(`SELECT * FROM produtos`)
         // console.table(result1.rows)
         produtosPrincipais = result1.rows
-        // console.log('passou')
+        console.log('passou')
         const result3 = await client.query(`SELECT * FROM grupos order by codigo  `)
         const result4 = await client.query(`SELECT * FROM subgrupos order by codigo `)
         gruposPrincipal = result3.rows
@@ -91,14 +94,18 @@ async function PrincipalConsult() {
         departamentosExportados = result5.rows
        
     } catch {
-        // console.log('errou no principal')
-        // return console.log(result1)
+        console.log('errou no principal')
+        return console.log(result1)
     }
 }
 
+
+
 app.get('/grupos', async (req, res) => {
     try {
+       
         const rows = [gruposExportados, subgruposExportados, gruposPrincipal, subgruposPrincipal]
+        
         return res.status(200).send(rows)
     }
     catch (err) {
@@ -108,7 +115,7 @@ app.get('/grupos', async (req, res) => {
 
 app.post('/grupos', async (req, res) => {
     try {
-        // console.log('post chegou')
+        console.log('post chegou')
         // console.log(req.body)
         empareamentoDosGrupos = req.body
         let resposta = {message:'deu certo'}
@@ -120,6 +127,7 @@ app.post('/grupos', async (req, res) => {
 });
 
 
+
 async function atualizando(){
     // console.log('atualizando')
 
@@ -128,24 +136,29 @@ async function atualizando(){
 
         produtosPrincipais.filter((idProdutosPrincipais) => {
             if (idProdutosPrincipais.cod_barras == idProdutosExportados.cod_barras) {
-
-             if(idProdutosPrincipais.descricao == idProdutosExportados.descricao){
-
-                let log = `${idProdutosPrincipais.descricao} analisar esses produto`
-                // console.log(log)
-                fs.appendFile('exportacao/Verificar.csv', String(log), function (err) {
-                  if (err) throw err;
-                  // console.log('Salvo os produtos em Comum');
-              });
-              }
-
                 idProdutosExportados.codigo = idProdutosPrincipais.codigo
                 produtosEmComum.push(idProdutosExportados)
-                // console.log('produto em comum')
+                console.log('produto em comum')
                 encontrado = true;
               }
+
               
+              if(idProdutosPrincipais.descricao == idProdutosExportados.descricao){
+                idProdutosExportados.codigo = idProdutosPrincipais.codigo
+                produtosEmComum.push(idProdutosExportados)
+                console.log('produto com codigo em  comum')
+                encontrado = true;
+                // let log = `${idProdutosPrincipais.descricao} analisar esses produto`
+                // console.log(log)
+            //     fs.writeFile('exportacao/Verificar.csv', String(log), function (err) {
+            //       if (err) throw err;
+            //       // console.log('Salvo os produtos em Comum');
+            //   });
+              }
+
+
             }
+
             )
             if (!encontrado) {
               
@@ -182,12 +195,12 @@ async function atualizando(){
         DadosProdutosDivergentes += `${id.cod_barras},${id.descricao},${id.novoCodigoTestado}\n`;
     })
 
-    fs.appendFile('exportacao/emComum.csv', String(DadosProdutosEmComum), function (err) {
+    fs.writeFile('exportacao/emComum.csv', String(DadosProdutosEmComum), function (err) {
         if (err) throw err;
         // console.log('Salvo os produtos em Comum');
     });
 
-    fs.appendFile('exportacao/Divergentes.csv', String(DadosProdutosDivergentes), function (err) {
+    fs.writeFile('exportacao/Divergentes.csv', String(DadosProdutosDivergentes), function (err) {
         if (err) throw err;
         // console.log('Salvo os produtos divergentes');
     });
@@ -248,7 +261,7 @@ function MakeInsert() {
         // console.log(idc, `${produtosDivergentes.length}`)
     })
 
-    fs.appendFile('exportacao/Isert_divergentes.txt', String(comando), function (err) {
+    fs.writeFile('exportacao/Isert_divergentes.txt', String(comando), function (err) {
         if (err) throw err;
         // console.log('Salvo o Insert');
     });
@@ -286,7 +299,7 @@ function ProdutosEmpresaMakeInsert(entrada) {
                 // console.log(idc, `${entrada.length}`)
     })
 
-    fs.appendFile('exportacao/Isert_divergentespee.txt', String(comando), function (err) {
+    fs.writeFile('exportacao/Isert_divergentespee.txt', String(comando), function (err) {
         if (err) throw err;
         // console.log('Salvo o Insert dos Produtos empresa');
     });
