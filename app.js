@@ -16,6 +16,9 @@ let produtosEmComum = [];
 let produtosDivergentes = [];
 let produtosEmpresaDivergentes = [];
 let empareamentoDosGrupos = [];
+let empareamentoDosDepartamentos = [];
+let departamentosExportados = ''
+let departamentosPrincipal = ''
 
 
 app.listen(PORTA, () => {
@@ -63,7 +66,7 @@ async function ExportConsult() {
         produtosExportados = result1.rows
         const result2 = await client.query(`SELECT produtos.cod_barras, produtos.descricao, produtos_empresa.*
         FROM produtos_empresa
-        INNER JOIN produtos ON produtos.codigo = produtos_empresa.cod_produto; `)
+        INNER JOIN produtos ON produtos.codigo = produtos_empresa.cod_produto where cod_empresa='01'; `)
         produtosEmpresaExportados = result2.rows
         const result3 = await client.query(`SELECT * FROM grupos order by codigo`)
         const result4 = await client.query(`SELECT * FROM subgrupos order by codigo`)
@@ -91,7 +94,7 @@ async function PrincipalConsult() {
         gruposPrincipal = result3.rows
         subgruposPrincipal = result4.rows
         const result5 = await client.query(`select * from departamentos order by codigo`)
-        departamentosExportados = result5.rows
+        departamentosPrincipal = result5.rows
        
     } catch {
         console.log('errou no principal')
@@ -119,7 +122,32 @@ app.post('/grupos', async (req, res) => {
         // console.log(req.body)
         empareamentoDosGrupos = req.body
         let resposta = {message:'deu certo'}
+        res.status(200).send(resposta);
+    } catch (err) {
+        return res.status(400).send(err);
+    }
+});
+
+app.get('/departamento', async (req, res) => {
+    try {
+        
+        const rows = [departamentosExportados, departamentosPrincipal] 
+        
+        return res.status(200).send(rows)
+    }
+    catch (err) {
+        return res.status(400).send(err)
+    }
+})
+
+app.post('/departamento', async (req, res) => {
+    try {
+        console.log('post chegou')
+        // console.log(req.body)
+        empareamentoDosDepartamentos = req.body
+        let resposta = {message:'deu certo'}
         atualizando()
+        
         res.status(200).send(resposta);
     } catch (err) {
         return res.status(400).send(err);
@@ -143,39 +171,41 @@ async function atualizando(){
               }
 
               
-              if(idProdutosPrincipais.descricao == idProdutosExportados.descricao){
-                idProdutosExportados.codigo = idProdutosPrincipais.codigo
-                produtosEmComum.push(idProdutosExportados)
-                console.log('produto com codigo em  comum')
-                encontrado = true;
-                // let log = `${idProdutosPrincipais.descricao} analisar esses produto`
-                // console.log(log)
-            //     fs.writeFile('exportacao/Verificar.csv', String(log), function (err) {
-            //       if (err) throw err;
-            //       // console.log('Salvo os produtos em Comum');
-            //   });
-              }
+        //       if(idProdutosPrincipais.descricao == idProdutosExportados.descricao){
+        //         idProdutosExportados.codigo = idProdutosPrincipais.codigo
+        //         produtosEmComum.push(idProdutosExportados)
+        //         console.log('produto com codigo em  comum')
+        //         encontrado = true;
+        //         // let log = `${idProdutosPrincipais.descricao} analisar esses produto`
+        //         // console.log(log)
+        //         //     fs.writeFile('exportacao/Verificar.csv', String(log), function (err) {
+        //     //       if (err) throw err;
+        //     //       // console.log('Salvo os produtos em Comum');
+        //     //   });
+        // }
+        
+        
+    }
 
-
-            }
-
-            )
-            if (!encontrado) {
-              
-              if (NovoCodigoInterno == 0) {
-                NovoCodigoInterno = produtosPrincipais.length;
-              }
-              NovoCodigoInterno++
-              idProdutosExportados.codigo = '0000000' + NovoCodigoInterno
-              idProdutosExportados.cod_marca = '0001'
-              
-              let novoSubGrupo = empareamentoDosGrupos.find(x => x.subgruposExportadosOriginal == idProdutosExportados.cod_subgrupo)
-              idProdutosExportados.cod_subgrupo = novoSubGrupo.subgruposExportadosSubstituido;
-              idProdutosExportados.cod_grupo = novoSubGrupo.subgruposExportadosSubstituido.slice(0,2)
-              produtosDivergentes.push(idProdutosExportados)
-              
-              
-              
+    )
+    if (!encontrado) {
+        
+        if (NovoCodigoInterno == 0) {
+            NovoCodigoInterno = produtosPrincipais.length;
+        }
+        NovoCodigoInterno++
+        idProdutosExportados.codigo = '0000000' + NovoCodigoInterno
+        idProdutosExportados.cod_marca = '0001'
+        
+        let novoSubGrupo = empareamentoDosGrupos.find(x => x.subgruposExportadosOriginal == idProdutosExportados.cod_subgrupo)
+        idProdutosExportados.cod_subgrupo = novoSubGrupo.subgruposExportadosSubstituido;
+        idProdutosExportados.cod_grupo = novoSubGrupo.subgruposExportadosSubstituido.slice(0,2)   
+        console.log('PRODUTO DIVERGENTE - PRODUTO DIVERGENTE - PRODUTO DIVERGENTE - PRODUTO DIVERGENTE - PRODUTO DIVERGENTE - PRODUTO DIVERGENTE - ')
+        
+        produtosDivergentes.push(idProdutosExportados)
+        
+        
+        
               
             // console.log( NovoCodigoInterno , typeof NovoCodigoInterno)
         }
@@ -209,18 +239,27 @@ async function atualizando(){
     // console.table(produtosDivergentes.length);
 
     
+    await produtosEmpresas()
+    await MakeInsert()
+    await ProdutosEmpresaMakeInsert(produtosEmpresaDivergentes)
 
-    MakeInsert()
-    produtosEmpresas()
-    ProdutosEmpresaMakeInsert(produtosEmpresaExportados)
 }
-;
-function produtosEmpresas(){
+
+async function produtosEmpresas(){
+
+    let novoSubDepartamento ='';
 
     produtosDivergentes.forEach((produto)=>{
     produtosEmpresaExportados.forEach((pee) => {
-        pee.cod_depto = '002'
-        if (pee.cod_barras == produto.cod_barras) {
+
+
+
+        novoSubDepartamento = empareamentoDosDepartamentos.find(x => x.DepartamentoExportadosOriginal === pee.cod_depto)
+        pee.cod_depto = novoSubDepartamento.DepartamentoExportadosSubstituido;
+        
+
+
+        if (produto.cod_barras === pee.cod_barras ) {
           pee.cod_produto = produto.codigo
           pee.cod_fornecedor = '0001'
           pee.dt_ini_validade = null
@@ -229,9 +268,11 @@ function produtosEmpresas(){
           pee.dt_alteracao = null
           pee.cod_produto = produto.codigo
           produtosEmpresaDivergentes.push(pee)
+          return
           
           // console.log('pee adicionado', pee.cod_produto, 'cod de barras', pee.cod_barras)
         }
+
       })
 
     })
