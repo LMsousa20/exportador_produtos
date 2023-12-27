@@ -161,8 +161,10 @@ async function atualizando(){
 
     produtosExportados.forEach((idProdutosExportados) => {
         let encontrado = false;
-
         produtosPrincipais.filter((idProdutosPrincipais) => {
+            
+
+
             if (idProdutosPrincipais.cod_barras == idProdutosExportados.cod_barras) {
                 idProdutosExportados.codigo = idProdutosPrincipais.codigo
                 produtosEmComum.push(idProdutosExportados)
@@ -171,18 +173,18 @@ async function atualizando(){
               }
 
               
-        //       if(idProdutosPrincipais.descricao == idProdutosExportados.descricao){
-        //         idProdutosExportados.codigo = idProdutosPrincipais.codigo
-        //         produtosEmComum.push(idProdutosExportados)
-        //         console.log('produto com codigo em  comum')
-        //         encontrado = true;
-        //         // let log = `${idProdutosPrincipais.descricao} analisar esses produto`
-        //         // console.log(log)
-        //         //     fs.writeFile('exportacao/Verificar.csv', String(log), function (err) {
-        //     //       if (err) throw err;
-        //     //       // console.log('Salvo os produtos em Comum');
-        //     //   });
-        // }
+              if(idProdutosPrincipais.descricao == idProdutosExportados.descricao && encontrado === false){
+                idProdutosExportados.codigo = idProdutosPrincipais.codigo
+                produtosEmComum.push(idProdutosExportados)
+                console.log('produto com codigo em  comum')
+                encontrado = true;
+                let log = `${idProdutosPrincipais.descricao} analisar esses produto`
+                console.log(log)
+                    fs.writeFile('exportacao/Verificar.csv', String(log), function (err) {
+                  if (err) throw err;
+                  console.log('Salvo os produtos em Comum');
+              });
+        }
         
         
     }
@@ -240,9 +242,12 @@ async function atualizando(){
 
     
     await produtosEmpresas()
+    if(produtosDivergentes){
     await MakeInsert()
     await ProdutosEmpresaMakeInsert(produtosEmpresaDivergentes)
-
+    }else{
+        console.log('não ha divergencias')
+    }
 }
 
 async function produtosEmpresas(){
